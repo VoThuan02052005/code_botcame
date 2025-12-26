@@ -32,19 +32,22 @@ def sigmoid(z):
 # ======================
 # FORWARD (CUSTOM MLP)
 # ======================
-def forward(X, params):
-    A = X
-    L = len(params) // 2
+def forward(X, para):
+    w1, b1, w2, b2 = para["w1"], para["b1"], para["w2"], para["b2"]
+    z1 = np.dot(X, w1) + b1
+    a1 = relu(z1)
+    z2 = np.dot(a1 , w2) +  b2
+    a2 = sigmoid(z2)
+    y_hat = a2
+    cache = {
+        "z1": z1 ,
+        "a1": a1 ,
+        "a2": a2 ,
+        "z2": z2 ,
+        "y_hat": y_hat
 
-    for l in range(1, L):
-        Z = A @ params[f"W{l}"] + params[f"b{l}"]
-        A = relu(Z)
-
-    # Output layer
-    ZL = A @ params[f"W{L}"] + params[f"b{L}"]
-    AL = sigmoid(ZL)
-
-    return AL
+    }
+    return cache
 
 # ======================
 # PREPROCESS IMAGE
@@ -74,11 +77,11 @@ if camera_image is not None:
     if st.button("🔮 Predict"):
         X = preprocess_image(image)
 
-        y_hat = forward(X, params)
-        prob = float(y_hat[0][0])
+        cache = forward(X, params)
+        prob = float(cache["y_hat"][0][0])
 
         label = CLASS_NAMES[int(prob > 0.5)]
 
-        st.success(f"✅ Prediction: **{label}**")
+        st.success(f"✅ Prediction anh thuan: **{label}**")
         st.write(f"Confidence: **{prob:.4f}**")
 
